@@ -231,6 +231,42 @@ journey
 
 ---
 
+## 10. Engineering Quality & CI/CD
+
+To ensure production readiness, the project includes a comprehensive test suite and an automated CI/CD pipeline using GitHub Actions.
+
+```mermaid
+graph LR
+    Dev[Developer] -->|Push Code| Github[GitHub Repo]
+    
+    subgraph "CI Pipeline (GitHub Actions)"
+        Github -->|Trigger| Setup[Setup Python]
+        Setup -->|Install| Deps[Install Dependencies]
+        Deps -->|Run| Tests[Pytest Suite]
+        
+        Tests -->|Unit| Models[Model Tests]
+        Tests -->|Integration| API[API Tests]
+    end
+    
+    Models -->|Pass| Success
+    API -->|Pass| Success
+    
+    Success[Build & Deploy]
+```
+
+### Automated Testing
+We use **pytest** for our testing framework, covering:
+-   **Model Architecture**: Verifies that Baseline and ResNet models initialize correctly and produce expected output shapes.
+-   **API Endpoints**: Checks health/readiness probes and API startup logic.
+-   **Integration**: Ensures the inference pipeline loads configurations correctly.
+
+Run tests locally with:
+```bash
+pytest tests/
+```
+
+---
+
 ## Installation and Setup Guides
 
 ### 1. Initial Setup
@@ -309,7 +345,7 @@ The following table maps strictly to the requirements outlined in the assessment
 | | **Error Analysis** | Implemented `plot_confusion_matrix` to visualize misclassifications. Example finding: "River" and "Highway" can differ subtly in low-res satellite imagery; the confusion matrix helps identify these specific crossover errors. |
 | **4. Inference** | **Pipeline Design** | Clean separation: `api/index.py` handles HTTP/Validation, while `src/inference` manages model logic. <br> **Loading:** Lazy loading pattern used to prevent memory spikes on startup (serverless friendly). |
 | | **Exposition** | **FastAPI** REST API. <br> - Endpoint: `POST /api/predict` <br> - Docs: Auto-generated Swagger/Redoc at `/docs`. <br> - Dockerized: Yes, `Dockerfile` provided for consistent serving. |
-| **5. Engineering** | **Code Quality** | - **Structure:** Modular (`src/data`, `src/models`, `src/training`) rather than a monolithic script. <br> - **Config:** `configs/config.yaml` manages all hyperparameters (learning rate, batch size, paths) centrally. <br> - **Logging:** Python `logging` used instead of `print` statements for production readiness. |
+| **5. Engineering** | **Code Quality** | - **Structure:** Modular (`src/data`, `src/models`, `src/training`) rather than a monolithic script. <br> - **Config:** `configs/config.yaml` manages all hyperparameters (learning rate, batch size, paths) centrally. <br> - **Testing & CI/CD:** Implemented **Unit Tests** (`pytest`) for models/API and a **GitHub Actions** pipeline to run them on every push. <br> - **Logging:** Python `logging` used instead of `print` statements for production readiness. |
 
 ---
 
