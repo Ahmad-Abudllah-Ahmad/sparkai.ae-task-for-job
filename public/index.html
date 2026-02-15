@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EuroSAT Classifier | Satellite Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-glow"></div>
+    
+    <main class="container">
+        <header>
+            <div class="badge">AI Powered</div>
+            <h1>EuroSAT Land-Use Classifier</h1>
+            <p>Advanced satellite imagery analysis using deep learning. Detects 10 distinctive land-cover classes with high precision.</p>
+        </header>
+
+        <div class="card glass-panel">
+            <div class="model-selector">
+                <label>Select Architecture:</label>
+                <div class="switch-toggle">
+                    <input type="radio" id="baseline" name="model_type" value="baseline" checked>
+                    <label for="baseline">Baseline CNN <span class="tag">Fast</span></label>
+                    
+                    <input type="radio" id="resnet" name="model_type" value="resnet">
+                    <label for="resnet">ResNet18 <span class="tag">Deep</span></label>
+                </div>
+            </div>
+
+            <div class="upload-zone" id="drop-zone">
+                <div class="upload-content">
+                    <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <h3>Upload Satellite Image</h3>
+                    <p>Drag & drop or <span class="browse-link">browse files</span></p>
+                    <input type="file" id="file-input" accept="image/*" hidden>
+                </div>
+                <div class="preview-container" id="preview-container" style="display: none;">
+                    <img id="image-preview" src="" alt="Preview">
+                    <button class="remove-btn" id="remove-btn">×</button>
+                </div>
+            </div>
+
+            <button id="predict-btn" class="primary-btn" disabled>
+                <span class="btn-text">Run Analysis</span>
+                <span class="loader" style="display: none;"></span>
+            </button>
+        </div>
+
+        <div class="results-section" id="results-section" style="display: none;">
+            <!-- Result contents injected per JS -->
+            <!-- Example:
+            <div class="result-card forest">
+                <h2>Forest</h2>
+                <div class="confidence">99.8% Confidence</div>
+            </div> 
+            -->
+        </div>
+        
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

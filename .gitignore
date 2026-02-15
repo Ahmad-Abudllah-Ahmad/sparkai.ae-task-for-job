@@ -1,0 +1,29 @@
+# Byte-compiled
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Data & model artifacts
+/data/
+/checkpoints/
+/outputs/
+/logs/
+
+# Environment
+.env
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/

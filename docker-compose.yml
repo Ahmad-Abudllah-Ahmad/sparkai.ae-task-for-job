@@ -1,0 +1,29 @@
+# ============================================================================
+# EuroSAT Classification — Docker Compose
+# ============================================================================
+version: "3.8"
+
+services:
+  inference-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: eurosat-classifier
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount model checkpoint (required for inference)
+      - ./checkpoints:/app/checkpoints:ro
+      - ./configs:/app/configs:ro
+      - ./outputs:/app/outputs
+      - ./logs:/app/logs
+    environment:
+      - CONFIG_PATH=/app/configs/config.yaml
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
