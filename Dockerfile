@@ -19,16 +19,8 @@ COPY public/ public/
 RUN mkdir -p /app/checkpoints /app/outputs /app/logs
 
 # Download model checkpoints from GitHub (self-contained, no upload dependency)
-RUN python -c "\
-    import urllib.request, os; \
-    base = 'https://github.com/Ahmad-Abudllah-Ahmad/sparkai.ae-task-for-job/raw/main/checkpoints'; \
-    models = ['best_baseline.pth', 'best_resnet.pth']; \
-    for m in models: \
-    url = f'{base}/{m}'; dest = f'/app/checkpoints/{m}'; \
-    print(f'Downloading {m}...'); \
-    urllib.request.urlretrieve(url, dest); \
-    size = os.path.getsize(dest); \
-    print(f'  -> {size:,} bytes')"
+RUN python -c "import urllib.request; urllib.request.urlretrieve('https://github.com/Ahmad-Abudllah-Ahmad/sparkai.ae-task-for-job/raw/main/checkpoints/best_baseline.pth', '/app/checkpoints/best_baseline.pth'); print('Downloaded best_baseline.pth')"
+RUN python -c "import urllib.request; urllib.request.urlretrieve('https://github.com/Ahmad-Abudllah-Ahmad/sparkai.ae-task-for-job/raw/main/checkpoints/best_resnet.pth', '/app/checkpoints/best_resnet.pth'); print('Downloaded best_resnet.pth')"
 
 # Environment variables
 ENV CONFIG_PATH=/app/configs/config.yaml
