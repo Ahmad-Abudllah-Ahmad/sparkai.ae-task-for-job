@@ -24,3 +24,5 @@ tqdm>=4.65.0
 pytest>=7.4.0
 # Linting (dev)
 flake8>=6.0.0
+pytest-cov>=4.1.0
+httpx>=0.24.0
