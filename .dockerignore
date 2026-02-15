@@ -1,0 +1,44 @@
+# Git
+.git
+.gitignore
+
+# Python / Virtual Envs (HUGE!)
+# Python / Virtual Envs (HUGE!)
+.venv/
+venv/
+**/.venv
+**/venv
+__pycache__/
+**/__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+# Dataset (Huge!)
+data/
+data/*
+
+# IDEs
+.vscode
+.idea
+.cursor
+
+# Local artifacts
+logs/
+outputs/
+wandb/
+.DS_Store
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+render.yaml
+railway.json
+vercel.json
+
+# Dependencies
+node_modules/
+
+# Huge unused model
+checkpoints/best_resnet.pth

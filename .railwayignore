@@ -1,0 +1,25 @@
+# Railway Ignore File (Overrides .dockerignore)
+.git
+.gitignore
+
+# Virtual Envs
+.venv/
+.venv
+venv/
+venv
+
+# Data
+data/
+data
+
+# Build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Node
+node_modules/
+
+# Checkpoints (Exclude heavy resnet)
+checkpoints/best_resnet.pth

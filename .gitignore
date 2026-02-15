@@ -5,7 +5,7 @@ __pycache__/
 
 # Data & model artifacts
 /data/
-/checkpoints/
+# /checkpoints/
 /outputs/
 /logs/
 
@@ -27,3 +27,4 @@ Thumbs.db
 
 # Jupyter
 .ipynb_checkpoints/
+.vercel

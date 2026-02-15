@@ -11,7 +11,8 @@ import io
 import yaml
 
 # Add project root to path to import from src
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+PROJECT_ROOT = os.environ.get('PROJECT_ROOT', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+sys.path.insert(0, PROJECT_ROOT)
 
 from src.inference.pipeline import InferencePipeline
 
@@ -28,7 +29,7 @@ config: Dict[str, Any] = {}
 
 def load_config():
     global config
-    config_path = os.path.join(os.path.dirname(__file__), '..', 'configs', 'config.yaml')
+    config_path = os.path.join(PROJECT_ROOT, 'configs', 'config.yaml')
     with open(config_path, 'r') as f:
         config = yaml.safe_load(f)
 
@@ -51,9 +52,9 @@ def get_pipeline(model_type: str) -> InferencePipeline:
         # Set checkpoint path based on model type
         # Assuming checkpoints are named consistently
         if model_type == 'baseline':
-            ckpt_path = os.path.join(os.path.dirname(__file__), '..', 'checkpoints', 'best_baseline.pth')
+            ckpt_path = os.path.join(PROJECT_ROOT, 'checkpoints', 'best_baseline.pth')
         else: # resnet
-            ckpt_path = os.path.join(os.path.dirname(__file__), '..', 'checkpoints', 'best_resnet.pth')
+            ckpt_path = os.path.join(PROJECT_ROOT, 'checkpoints', 'best_resnet.pth')
             
         # Update config inference path so pipeline loads correct model
         if 'inference' not in model_config:
@@ -112,6 +113,6 @@ async def predict(
 # Mount public directory for static files (frontend) settings
 # We mount at root to simulate Vercel's behavior where everything not /api is static
 # API routes defined above take precedence
-public_path = os.path.join(os.path.dirname(__file__), '..', 'public')
+public_path = os.path.join(PROJECT_ROOT, 'public')
 if os.path.exists(public_path):
     app.mount("/", StaticFiles(directory=public_path, html=True), name="public")

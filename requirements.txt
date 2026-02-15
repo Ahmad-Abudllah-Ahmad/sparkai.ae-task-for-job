@@ -1,6 +1,7 @@
 # ============================================================================
 # EuroSAT Land-Use Classification — Dependencies
 # ============================================================================
+--extra-index-url https://download.pytorch.org/whl/cpu
 # Core ML
 torch>=2.0.0
 torchvision>=0.15.0
