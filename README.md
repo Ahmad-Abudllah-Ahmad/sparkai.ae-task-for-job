@@ -11,7 +11,7 @@ We have evaluated our models rigorously to ensure high reliability. The table be
 | Model | Test Accuracy | F1 Score (Macro) | Inference Time (CPU) | Size (MB) |
 | :--- | :--- | :--- | :--- | :--- |
 | **Baseline CNN** | 95.53% | 95.43% | ~15ms | 1.3 MB |
-| **ResNet18 (Fine-tuned)** | Not selected | Not selected | ~65ms | 45 MB |
+| **ResNet18 (Fine-tuned)** | 92.30% | 92.14% | ~65ms | 45 MB |
 
 ## Key Features
 
@@ -269,7 +269,7 @@ python -m src.training.train --config configs/config.yaml
 
 To evaluate the model's performance on the test set:
 ```bash
-python -m src.evaluation.evaluate --model_path checkpoints/best_resnet.pth
+python -m src.evaluation.evaluate --model_path checkpoints/best_resnet.pth --model_type resnet
 ```
 
 ## detailed File Structure
