@@ -164,7 +164,7 @@ class InferencePipeline:
         """Run inference on a preprocessed tensor."""
         tensor = tensor.to(self.device)
 
-        with torch.no_grad():
+        with torch.inference_mode():
             outputs = self.model(tensor)
             probs = torch.softmax(outputs, dim=1)
             confidence, predicted = probs.max(1)

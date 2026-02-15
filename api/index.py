@@ -28,6 +28,25 @@ app = FastAPI(title="EuroSAT Vercel API")
 pipelines: Dict[str, InferencePipeline] = {}
 config: Dict[str, Any] = {}
 
+
+@app.on_event("startup")
+async def preload_models():
+    """Preload both models at startup to eliminate cold-start latency."""
+    import torch
+    logger.info("Preloading models at startup...")
+    for model_type in ["baseline", "resnet"]:
+        try:
+            pipeline = get_pipeline(model_type)
+            # Warmup pass: run a dummy tensor through the model
+            # This triggers PyTorch internal optimizations (memory alloc, kernel selection)
+            dummy = torch.randn(1, 3, 64, 64)
+            with torch.inference_mode():
+                pipeline.model(dummy.to(pipeline.device))
+            logger.info(f"  {model_type} preloaded + warmed up")
+        except Exception as e:
+            logger.warning(f"  {model_type} preload failed: {e}")
+    logger.info("Model preloading complete.")
+
 def load_config():
     global config
     config_path = os.path.join(PROJECT_ROOT, 'configs', 'config.yaml')
