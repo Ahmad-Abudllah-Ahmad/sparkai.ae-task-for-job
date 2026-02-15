@@ -145,9 +145,9 @@ graph TD
     TestSet[Test Dataset] --> Evaluator[Evaluation Script]
     Model[Trained Model] --> Evaluator
     
-    Evaluator -->|Compare| Predictions vs GroundTruth
+    Evaluator -->|Compare| Pg[Predictions vs GroundTruth]
     
-    Predictions --> Metrics[Compute Metrics]
+    Pg --> Metrics[Compute Metrics]
     
     Metrics --> Accuracy
     Metrics --> Precision
