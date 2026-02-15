@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+import time
 from typing import Dict, Any
 
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
@@ -101,8 +102,12 @@ async def predict(
         contents = await file.read()
         image = Image.open(io.BytesIO(contents)).convert("RGB")
         
+        start_time = time.time()
         result = pipeline.predict(image)
+        inference_ms = round((time.time() - start_time) * 1000, 1)
+        
         result["model_used"] = model_type
+        result["inference_time_ms"] = inference_ms
         
         return JSONResponse(result)
         

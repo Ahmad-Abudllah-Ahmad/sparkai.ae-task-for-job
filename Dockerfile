@@ -18,15 +18,17 @@ COPY public/ public/
 # Create directories
 RUN mkdir -p /app/checkpoints /app/outputs /app/logs
 
-# Download model checkpoint from GitHub (self-contained, no upload dependency)
+# Download model checkpoints from GitHub (self-contained, no upload dependency)
 RUN python -c "\
     import urllib.request, os; \
-    url = 'https://github.com/Ahmad-Abudllah-Ahmad/sparkai.ae-task-for-job/raw/main/checkpoints/best_baseline.pth'; \
-    dest = '/app/checkpoints/best_baseline.pth'; \
-    print(f'Downloading model from {url}...'); \
+    base = 'https://github.com/Ahmad-Abudllah-Ahmad/sparkai.ae-task-for-job/raw/main/checkpoints'; \
+    models = ['best_baseline.pth', 'best_resnet.pth']; \
+    for m in models: \
+    url = f'{base}/{m}'; dest = f'/app/checkpoints/{m}'; \
+    print(f'Downloading {m}...'); \
     urllib.request.urlretrieve(url, dest); \
     size = os.path.getsize(dest); \
-    print(f'Downloaded {size} bytes to {dest}')"
+    print(f'  -> {size:,} bytes')"
 
 # Environment variables
 ENV CONFIG_PATH=/app/configs/config.yaml
