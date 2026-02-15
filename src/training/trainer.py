@@ -193,7 +193,7 @@ class Trainer:
 
             if val_acc > best_val_acc:
                 best_val_acc = val_acc
-                logger.info(f"  ★ New best validation accuracy: {best_val_acc:.2f}%")
+                logger.info(f"  * New best validation accuracy: {best_val_acc:.2f}%")
 
             # Learning rate scheduling
             if self.scheduler is not None:
