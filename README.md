@@ -262,6 +262,7 @@ We use **pytest** for our testing framework, covering:
 
 Run tests locally with:
 ```bash
+export PYTHONPATH=$PYTHONPATH:.
 pytest tests/
 ```
 

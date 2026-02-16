@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technical Assessment Submission - EuroSAT Land Use Classification</title>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
+    <style>
+        body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+            background: #ffffff;
+            color: #24292f;
+        }
+
+        .markdown-body {
+            background: #ffffff;
+            color: #24292f;
+        }
+
+        .markdown-body h1,
+        .markdown-body h2,
+        .markdown-body h3 {
+            border-bottom-color: #d0d7de;
+            color: #24292f;
+        }
+
+        .markdown-body table th,
+        .markdown-body table td {
+            border-color: #d0d7de;
+        }
+
+        .markdown-body table tr {
+            background-color: #ffffff;
+            border-color: #d0d7de;
+        }
+
+        .markdown-body table tr:nth-child(2n) {
+            background-color: #f6f8fa;
+        }
+
+        .markdown-body hr {
+            background-color: #d0d7de;
+        }
+
+        .markdown-body code {
+            background-color: #f6f8fa;
+            color: #24292f;
+        }
+
+        .markdown-body pre {
+            background-color: #f6f8fa;
+        }
+
+        .markdown-body a {
+            color: #0969da;
+        }
+
+        .markdown-body strong {
+            color: #24292f;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+            border-bottom: 2px solid #aec4da;
+            background: linear-gradient(135deg, #f6f8fa 0%, #ffffff 100%);
+            border-radius: 12px;
+        }
+
+        .header h1 {
+            margin-bottom: 0.3em;
+            font-size: 2.2em;
+            color: #24292f;
+            border: none;
+        }
+
+        .header p {
+            color: #57606a;
+            font-size: 1.2em;
+            margin: 0;
+        }
+
+        .mermaid {
+            background: #ffffff !important;
+            border: 1px solid #d0d7de;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        @media (max-width: 767px) {
+            body {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body class="markdown-body">
+
+    <div class="header">
+        <h1>Technical Assessment Submission</h1>
+        <p>AI/ML Engineer &mdash; EuroSAT Land Use Classification System</p>
+    </div>
+
+    <h1>EuroSAT Land Use Classification System</h1>
+
+    <h2>Project Overview</h2>
+    <p>The EuroSAT Land Use Classification System is a production-grade Deep Learning application designed to classify
+        satellite imagery into distinct land use categories. The system is built on a robust pipeline that handles
+        everything from data ingestion and model training to evaluation and deployment. We leverage the power of PyTorch
+        for deep learning and FastAPI to provide a high-performance inference engine. The entire application is
+        containerized using Docker, ensuring that it runs consistently across different environments, from development
+        machines to cloud servers.</p>
+
+    <h2>Model Performance</h2>
+    <p>We have evaluated our models rigorously to ensure high reliability. The table below summarizes the performance of
+        our Baseline CNN compared to a fine-tuned ResNet18 model.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Model</th>
+                <th>Test Accuracy</th>
+                <th>F1 Score (Macro)</th>
+                <th>Inference Time (CPU)</th>
+                <th>Size (MB)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Baseline CNN</strong></td>
+                <td>95.53%</td>
+                <td>95.43%</td>
+                <td>~15ms</td>
+                <td>1.3 MB</td>
+            </tr>
+            <tr>
+                <td><strong>ResNet18 (Fine-tuned)</strong></td>
+                <td>92.30%</td>
+                <td>92.14%</td>
+                <td>~65ms</td>
+                <td>45 MB</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Key Features</h2>
+    <p>Our system supports a Dual Model Architecture, allowing users to choose between a custom Baseline CNN for speed
+        or a Transfer Learning approach using ResNet for potentially higher accuracy. The API is production-ready,
+        featuring health checks, comprehensive logging, and error handling to ensure stability. We have prioritized
+        automation, providing scripts for training, evaluation, and inference to streamline the workflow. Additionally,
+        the system generates detailed metrics, including classification reports and confusion matrices, to provide deep
+        insights into model performance.</p>
+
+    <hr>
+
+    <h2>1. System Architecture</h2>
+    <p>The architecture is designed for modularity and scalability. The diagram below illustrates how user requests flow
+        through the API gateway to the core processing components.</p>
+    <pre class="mermaid">
+graph TD
+    User[User / Client] -->|HTTP Request| API[FastAPI Interface]
+    API -->|1. Validate Input| Validator[Input Validator]
+    Validator -->|2. Preprocess| Preprocessor[Image Preprocessor]
+    Preprocessor -->|3. Inference| ModelEngine[Model Inference Engine]
+    subgraph Model_Engine
+        ModelEngine -->|Select| Baseline[Baseline Model]
+        ModelEngine -->|Select| ResNet[ResNet50 Model]
+    end
+    Baseline -->|Logits| PostProcessor[Post-Processor]
+    ResNet -->|Logits| PostProcessor
+    PostProcessor -->|JSON Response| API
+    API -->|Result| User
+    </pre>
+
+    <hr>
+
+    <h2>2. Docker Container Structure</h2>
+    <p>To ensure consistency, the application is packaged in a secure Docker container. This structure guarantees that
+        dependencies and code layers are managed efficiently.</p>
+    <pre class="mermaid">
+graph TD
+    subgraph Container
+        Base[Base: python:3.11-slim]
+        subgraph Layers
+            OS[OS Dependencies]
+            Py[Python Dependencies]
+            Code[Source Code]
+            Models[Model Checkpoints]
+        end
+        Entry[Entrypoint: uvicorn]
+        Base --> Layers
+        Layers --> Entry
+    end
+    </pre>
+
+    <hr>
+
+    <h2>3. Training Process</h2>
+    <p>Our training pipeline is configurable and robust. It includes features like early stopping and model
+        checkpointing to ensure optimal training results without overfitting.</p>
+    <pre class="mermaid">
+flowchart LR
+    Config[Config.yaml] --> Trainer
+    Dataset[EuroSAT Dataset] -->|Load| Dataloader[Data Loader]
+    Dataloader -->|Batch| Trainer[Trainer Loop]
+    subgraph Training_Loop
+        Trainer -->|Forward Pass| Model
+        Model -->|Loss Calculation| LossFn[CrossEntropyLoss]
+        LossFn -->|Backprop| Optimizer[Adam/SGD]
+        Optimizer -->|Update Weights| Model
+    end
+    Trainer -->|Log Metrics| History[Training History]
+    Trainer -->|Save Best| Checkpoint[Model Checkpoint]
+    </pre>
+
+    <hr>
+
+    <h2>4. Inference Data Flow</h2>
+    <p>When a user sends an image for classification, it goes through a specific sequence of processing steps to ensure
+        accurate prediction.</p>
+    <pre class="mermaid">
+sequenceDiagram
+    participant Client
+    participant API
+    participant Pipeline
+    participant Model
+    Client->>API: POST /api/predict (Image)
+    API->>Pipeline: predict(image)
+    Pipeline->>Pipeline: preprocess(resize, normalize)
+    Pipeline->>Model: forward(tensor)
+    Model-->>Pipeline: logits
+    Pipeline->>Pipeline: softmax(logits)
+    Pipeline-->>API: class, confidence, latency
+    API-->>Client: JSON Response
+    </pre>
+
+    <hr>
+
+    <h2>5. Data Processing Pipeline</h2>
+    <p>Before an image enters the neural network, it is transformed and normalized. During training, we also apply data
+        augmentation to improve model generalization.</p>
+    <pre class="mermaid">
+graph LR
+    Raw[Raw Image] -->|Resize 64x64| Resized[Resized Image]
+    Resized -->|ToTensor| Tensor[Float Tensor]
+    Tensor -->|Normalize| Normalized[Normalized Tensor]
+    subgraph Augmentation
+        Normalized -->|RandomFlip| Flip
+        Flip -->|RandomRotation| Rotate
+    end
+    Rotate --> Batch[Batch Assembly]
+    Normalized --> Batch
+    </pre>
+
+    <hr>
+
+    <h2>6. Evaluation Methodology</h2>
+    <p>We evaluate our models using a comprehensive set of metrics to understand their strengths and weaknesses across
+        different classes.</p>
+    <pre class="mermaid">
+graph TD
+    TestSet[Test Dataset] --> Evaluator[Evaluation Script]
+    Model[Trained Model] --> Evaluator
+    Evaluator -->|Compare| Pg[Predictions vs GroundTruth]
+    Pg --> Metrics[Compute Metrics]
+    Metrics --> Accuracy
+    Metrics --> Precision
+    Metrics --> Recall
+    Metrics --> F1Score
+    Metrics --> Report[Classification Report]
+    Metrics --> Matrix[Confusion Matrix]
+    </pre>
+
+    <hr>
+
+    <h2>7. Deployment Workflow</h2>
+    <p>The deployment pipeline is designed to be seamless, taking code from the repository to a production-ready
+        container automatically.</p>
+    <pre class="mermaid">
+graph LR
+    Dev[Developer] -->|Push| DOM[GitHub Repo]
+    subgraph CICD
+        DOM -->|Trigger| Build[Docker Build]
+        Build -->|Test| Tests[Unit Tests]
+    end
+    Tests -->|Success| Registry[Container Registry]
+    Registry -->|Pull| Server[Production Server]
+    Server -->|Run| App[Running App]
+    </pre>
+
+    <hr>
+
+    <h2>8. API Architecture</h2>
+    <p>The API structure is clean and intuitive, with dedicated endpoints for health checks and predictions.</p>
+    <pre class="mermaid">
+classDiagram
+    class API {
+        +GET /api/health
+        +POST /api/predict
+    }
+    class HealthResponse {
+        +status: string
+        +models_loaded: list
+    }
+    class PredictResponse {
+        +class_name: string
+        +confidence: float
+        +inference_time: float
+    }
+    API --> HealthResponse : returns
+    API --> PredictResponse : returns
+    </pre>
+
+    <hr>
+
+    <h2>9. User Journey</h2>
+    <p>The user experience is designed to be straightforward, from opening the application to viewing the classification
+        results.</p>
+    <pre class="mermaid">
+journey
+    title User Journey for Image Classification
+    section Start
+        Open App: 5: User
+        Check Health: 5: User, API
+    section Upload
+        Select Image: 4: User
+        Upload Image: 4: User, API
+    section Process
+        Processing: 3: API
+        Inference: 5: Model
+    section Result
+        View Result: 5: User
+        Check Confidence: 4: User
+    </pre>
+
+    <hr>
+
+    <h2>10. Engineering Quality &amp; CI/CD</h2>
+    <p>To ensure production readiness, the project includes a comprehensive test suite and an automated CI/CD pipeline
+        using GitHub Actions.</p>
+    <pre class="mermaid">
+graph LR
+    Dev[Developer] -->|Push Code| Github[GitHub Repo]
+    subgraph CI_Pipeline
+        Github -->|Trigger| Setup[Setup Python]
+        Setup -->|Install| Deps[Install Dependencies]
+        Deps -->|Run| Tests[Pytest Suite]
+        Tests -->|Unit| Models[Model Tests]
+        Tests -->|Integration| APITest[API Tests]
+    end
+    Models -->|Pass| Success[Build and Deploy]
+    APITest -->|Pass| Success
+    </pre>
+
+    <h3>Automated Testing</h3>
+    <p>We use <strong>pytest</strong> for our testing framework, covering:</p>
+    <ul>
+        <li><strong>Model Architecture</strong>: Verifies that Baseline and ResNet models initialize correctly and
+            produce expected output shapes.</li>
+        <li><strong>API Endpoints</strong>: Checks health/readiness probes and API startup logic.</li>
+        <li><strong>Integration</strong>: Ensures the inference pipeline loads configurations correctly.</li>
+    </ul>
+    <p>Run tests locally with:</p>
+    <pre><code>export PYTHONPATH=$PYTHONPATH:.
+pytest tests/</code></pre>
+
+    <hr>
+
+    <h2>Installation and Setup Guides</h2>
+
+    <h3>1. Initial Setup</h3>
+    <p>Start by cloning the repository to your local machine.</p>
+    <pre><code>git clone https://github.com/Ahmad-Abudllah-Ahmad/sparkai.ae-task-for-job.git
+cd sparkai-task</code></pre>
+
+    <h3>2. Dependency Management</h3>
+    <p>We recommend creating a virtual environment to manage dependencies cleanly.</p>
+    <pre><code>python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt</code></pre>
+
+    <h3>3. Docker Deployment</h3>
+    <p>To run the application in a container, build and run the Docker image.</p>
+    <pre><code>docker build -t eurosat-classifier .
+docker run -p 8000:8000 eurosat-classifier</code></pre>
+    <p>The API will be accessible at <code>http://localhost:8000</code>.</p>
+
+    <h3>4. Running Locally &amp; Training</h3>
+    <p>You can also run the API directly using Uvicorn.</p>
+    <pre><code>uvicorn api.index:app --reload</code></pre>
+    <p>To train a new model, use the provided training script with your configuration.</p>
+    <pre><code>python -m src.training.train --config configs/config.yaml</code></pre>
+    <p>To evaluate the model's performance on the test set:</p>
+    <pre><code>python -m src.evaluation.evaluate --model_path checkpoints/best_resnet.pth --model_type resnet</code></pre>
+
+    <h2>File Structure</h2>
+    <pre><code>├── api/                  # FastAPI application endpoints
+├── configs/              # Configuration files (YAML)
+├── src/
+│   ├── data/             # Data loading and preprocessing
+│   ├── models/           # Model definitions (CNN, ResNet)
+│   ├── training/         # Training loops and trainers
+│   ├── evaluation/       # Metrics and evaluation scripts
+│   └── inference/        # Inference pipelines
+├── tests/                # Unit tests (pytest)
+├── .github/workflows/    # CI/CD pipeline (GitHub Actions)
+├── checkpoints/          # Saved model weights
+├── Dockerfile            # Docker configuration
+├── requirements.txt      # Python dependencies
+└── README.md             # Project documentation</code></pre>
+
+    <hr>
+
+    <h1>Technical Skills Assessment Filter - Project Analysis</h1>
+    <p>This document provides a detailed mapping of the "AI / Machine Learning Engineer – Technical Skills Assessment"
+        against the implemented EuroSAT Land Use Classification System. It serves to strictly answer the assessment
+        queries and demonstrate the engineering decisions made during development.</p>
+
+    <hr>
+
+    <h2>1. Assessment Requirement Mapping</h2>
+    <p>The following table maps strictly to the requirements outlined in the assessment document.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Section</th>
+                <th>Requirement</th>
+                <th>Project Implementation &amp; Decision Rationale</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Core Task</strong></td>
+                <td><strong>Problem Statement</strong></td>
+                <td><strong>Image Classification</strong> selected. Using <strong>EuroSAT</strong> dataset (RGB
+                    version).<br><em>Rationale:</em> EuroSAT is non-trivial but manageable size-wise (~27k images),
+                    allowing for meaningful model comparison (CNN vs ResNet) within the 72h timeframe. It has clear
+                    real-world utility (environmental monitoring).</td>
+            </tr>
+            <tr>
+                <td><strong>1. Data</strong></td>
+                <td><strong>Understanding &amp; Prep</strong></td>
+                <td><strong>Size:</strong> 27,000 images, 10 classes.<br><strong>Format:</strong> 64x64 RGB
+                    images.<br><strong>Class Distribution:</strong> Relatively balanced (~2k-3k per
+                    class).<br><strong>Imbalance Handling:</strong> Computed class weights (inverse frequency) and used
+                    <code>WeightedRandomSampler</code> in training.</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><strong>Preprocessing</strong></td>
+                <td><strong>Training:</strong> Random Rotation, Horizontal/Vertical Flips, Color
+                    Jitter.<br><strong>Inference:</strong> Resize (to 64x64/224x224), Normalization (using ImageNet
+                    stats for ResNet), ToTensor.</td>
+            </tr>
+            <tr>
+                <td><strong>2. Modeling</strong></td>
+                <td><strong>Model Selection</strong></td>
+                <td><strong>Model 1: Baseline CNN</strong> - A custom lightweight 3-layer CNN. Chosen to demonstrate
+                    ability to build models from scratch.<br><strong>Model 2: ResNet18 (Fine-Tuned)</strong> - Transfer
+                    learning from ImageNet. Justified because satellite imagery shares low-level visual features with
+                    natural images.</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><strong>Compute Constraints</strong></td>
+                <td><strong>ResNet18</strong> was chosen over ResNet50/101 specifically for <strong>CPU/Laptop
+                        inference</strong>.<br><strong>Size:</strong> 45MB vs ~100MB+.<br><strong>Inference:</strong>
+                    ~65ms on CPU, making it feasible for real-time deployment without GPU.</td>
+            </tr>
+            <tr>
+                <td><strong>3. Evaluation</strong></td>
+                <td><strong>Methodology</strong></td>
+                <td><strong>Split:</strong> Stratified 70% Train / 15% Val / 15% Test.<br><strong>Metrics:</strong>
+                    Accuracy, Precision, Recall, Macro F1-Score.</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><strong>Error Analysis</strong></td>
+                <td>Implemented <code>plot_confusion_matrix</code> to visualize misclassifications. Example: "River" and
+                    "Highway" can differ subtly in low-res satellite imagery.</td>
+            </tr>
+            <tr>
+                <td><strong>4. Inference</strong></td>
+                <td><strong>Pipeline Design</strong></td>
+                <td>Clean separation: <code>api/index.py</code> handles HTTP/Validation, while
+                    <code>src/inference</code> manages model logic.<br><strong>Loading:</strong> Lazy loading pattern
+                    used to prevent memory spikes on startup.</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><strong>Exposition</strong></td>
+                <td><strong>FastAPI</strong> REST API.<br>Endpoint: <code>POST /api/predict</code><br>Docs:
+                    Auto-generated Swagger/Redoc at <code>/docs</code>.<br>Dockerized: Yes, <code>Dockerfile</code>
+                    provided for consistent serving.</td>
+            </tr>
+            <tr>
+                <td><strong>5. Engineering</strong></td>
+                <td><strong>Code Quality</strong></td>
+                <td><strong>Structure:</strong> Modular (<code>src/data</code>, <code>src/models</code>,
+                    <code>src/training</code>).<br><strong>Config:</strong> <code>configs/config.yaml</code> manages all
+                    hyperparameters centrally.<br><strong>Testing &amp; CI/CD:</strong> Unit Tests (<code>pytest</code>)
+                    + <strong>GitHub Actions</strong> pipeline.<br><strong>Logging:</strong> Python <code>logging</code>
+                    used instead of <code>print</code> statements.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <h2>2. In-Depth Analysis</h2>
+
+    <h3>Data Understanding</h3>
+    <p>The EuroSAT dataset presents a unique challenge compared to standard object photos. Being satellite imagery:</p>
+    <ol>
+        <li><strong>Orientation Invariance:</strong> A forest looks like a forest whether viewed from North or South up.
+            This justified using aggressive <strong>RandomHorizontalFlip</strong> and
+            <strong>RandomVerticalFlip</strong> augmentations.</li>
+        <li><strong>Resolution:</strong> At 64x64, features are coarse. Upscaling to 224x224 for ResNet was necessary to
+            utilize pretrained weights effectively, even though it adds compute overhead.</li>
+    </ol>
+
+    <h3>Model Selection Strategy</h3>
+    <ul>
+        <li><strong>Baseline CNN:</strong> Achieved ~95% accuracy but is extremely lightweight (1.3MB). This proves that
+            for specific, constrained domains, custom architectures can be very competitive.</li>
+        <li><strong>ResNet18:</strong> Achieved ~92% accuracy. Its strength lies in <strong>robustness</strong> and
+            generalization potential if more data were added. It was chosen to demonstrate <strong>Transfer
+                Learning</strong> competence.</li>
+    </ul>
+
+    <h3>Engineering Decisions</h3>
+    <ul>
+        <li><strong>Docker:</strong> Used <code>python:3.11-slim</code> to keep image size small.</li>
+        <li><strong>API:</strong> Separated the prediction logic from the route handler. This allows the inference logic
+            to be reused by different frameworks without rewriting code.</li>
+    </ul>
+
+    <hr>
+
+    <h2>3. Future Improvements (Scale &amp; Compute)</h2>
+    <p><strong>If additional compute and time were available, how would we scale?</strong></p>
+
+    <h3>1. Scaling Training</h3>
+    <ul>
+        <li><strong>Distributed Data Parallel (DDP):</strong> Use <code>torch.nn.parallel.DistributedDataParallel</code>
+            to train across multiple GPUs.</li>
+        <li><strong>Larger Batch Size:</strong> Increase batch size from 64 using gradient accumulation to stabilize
+            batch norm statistics.</li>
+        <li><strong>Mixed Precision:</strong> Implement <code>torch.cuda.amp</code> (FP16) training to reduce VRAM usage
+            and speed up training on Tensor Core GPUs.</li>
+    </ul>
+
+    <h3>2. Model Improvements</h3>
+    <ul>
+        <li><strong>Vision Transformers (ViT):</strong> Experiment with ViT-Tiny or Swin Transformers, which often
+            capture global context better in remote sensing data than CNNs.</li>
+        <li><strong>Self-Supervised Learning:</strong> Pre-train on a massive unlabeled satellite dataset (like
+            Sentinel-2 archives) using methods like <strong>SimCLR</strong> or <strong>DINO</strong> before fine-tuning
+            on EuroSAT.</li>
+    </ul>
+
+    <h3>3. Data Improvements</h3>
+    <ul>
+        <li><strong>Test Time Augmentation (TTA):</strong> During inference, predict on the image + its flipped/rotated
+            versions and average the results to improve confidence.</li>
+        <li><strong>Hard Example Mining:</strong> Automatically identify samples with high loss (e.g., River vs Highway)
+            and oversample them in subsequent training epochs.</li>
+    </ul>
+
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+
+</body>
+
+</html>
